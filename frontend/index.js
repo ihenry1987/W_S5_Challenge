@@ -52,24 +52,32 @@ async function sprintChallenge5() {
 
     // 👇 ==================== TASK 3 START ==================== 👇
 
-    const mentorsList = document.createElement('ul');
-    mentorsList.classList.add('mentors-list'); // Ensure class for styling
+    learners.forEach(learner => {
+      const card = document.createElement('div');
+      const heading = document.createElement('h3');
+      const email = document.createElement('div');
+      const mentorsHeading = document.createElement('h4');
+      const mentorsList = document.createElement('ul');
     
-    // Clear any existing items in mentorsList
-    mentorsList.innerHTML = '';
+      card.classList.add('card');
+      heading.classList.add('heading');
+      email.classList.add('email');
+      mentorsHeading.classList.add('mentors-heading');
     
-    for (const mentorId of learner.mentorIds) {
-      const mentor = mentors.find(m => m.id === mentorId);
-      if (mentor) {
-        const mentorItem = document.createElement('li');
-        mentorItem.textContent = mentor.name; // Ensure correct mentor name is used
-        mentorsList.appendChild(mentorItem);
-      } else {
-        console.error(`Mentor with ID ${mentorId} not found`);
-      }
-    }
+      heading.textContent = learner.fullName;
+      email.textContent = learner.email;
+      mentorsHeading.textContent = 'Mentors';
     
-    mentorsHeading.textContent = 'Mentors';
+      learner.mentors.forEach(mentorName => {
+        const li = document.createElement('li');
+        li.textContent = mentorName;
+        mentorsList.appendChild(li);
+      });
+    
+      card.appendChild(heading);
+      card.appendChild(email);
+      card.appendChild(mentorsHeading);
+      card.appendChild(mentorsList);
 
       // 👆 ==================== TASK 3 END ====================== 👆
 
