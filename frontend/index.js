@@ -51,7 +51,6 @@ async function sprintChallenge5() {
     info.textContent = 'No learner is selected';
 
     // 👇 ==================== TASK 3 START ==================== 👇
-
     learners.forEach(learner => {
       const card = document.createElement('div');
       const heading = document.createElement('h3');
@@ -62,16 +61,16 @@ async function sprintChallenge5() {
       card.classList.add('card');
       heading.classList.add('heading');
       email.classList.add('email');
-      mentorsHeading.classList.add('mentors-heading'); // Ensure 'mentors-heading' class for <h4>
-      mentorsList.classList.add('mentors-list'); // Ensure 'mentors-list' class for <ul>
-      
+      mentorsHeading.classList.add('mentors-heading'); // Ensure correct class name
+      mentorsList.classList.add('mentors-list'); // Ensure correct class name
+    
       heading.textContent = learner.fullName;
       email.textContent = learner.email;
-      mentorsHeading.textContent = 'Mentors'; // Ensure <h4> displays "Mentors"
+      mentorsHeading.textContent = 'Mentors'; // Ensure this text
     
       learner.mentors.forEach(mentorName => {
         const li = document.createElement('li');
-        li.textContent = mentorName; // Ensure correct mentor names
+        li.textContent = mentorName || "Unknown"; // Ensure mentor names are populated
         mentorsList.appendChild(li);
       });
     
@@ -86,6 +85,7 @@ async function sprintChallenge5() {
     // Fix: Ensure mentors lists are hidden initially
     const mentorLists = document.querySelectorAll('.mentors-list');
     mentorLists.forEach(list => list.style.display = 'none'); // Hide <ul> initially
+    
     
 
       // 👆 ==================== TASK 3 END ====================== 👆
