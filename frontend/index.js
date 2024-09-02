@@ -59,26 +59,38 @@ async function sprintChallenge5() {
       const mentorsHeading = document.createElement('h4');
       const mentorsList = document.createElement('ul');
     
+      // Set classes
       card.classList.add('card');
       heading.classList.add('heading');
       email.classList.add('email');
-      mentorsHeading.classList.add('closed');
-      mentorsList.classList.add('mentors-list')
+      mentorsHeading.classList.add('mentors-heading'); // Ensure correct class
+      mentorsList.classList.add('mentors-list'); // Ensure correct class
     
+      // Set text content
       heading.textContent = learner.fullName;
       email.textContent = learner.email;
       mentorsHeading.textContent = 'Mentors';
     
+      // Add mentor names to the list
       learner.mentors.forEach(mentorName => {
         const li = document.createElement('li');
         li.textContent = mentorName;
         mentorsList.appendChild(li);
       });
     
+      // Append elements to the card
       card.appendChild(heading);
       card.appendChild(email);
       card.appendChild(mentorsHeading);
       card.appendChild(mentorsList);
+    
+      // Append the card to the container
+      cardsContainer.appendChild(card);
+    
+      // Ensure mentors are hidden initially
+      mentorsList.classList.add('hidden');
+    });
+    
 
       // 👆 ==================== TASK 3 END ====================== 👆
 
@@ -124,13 +136,13 @@ async function sprintChallenge5() {
           }
         }
       });
-    });
+    };
 
     const footer = document.querySelector('footer');
     const currentYear = new Date().getFullYear();
     footer.textContent = `© BLOOM INSTITUTE OF TECHNOLOGY ${currentYear}`;
   }
-}
+
 
 // ❗ DO NOT CHANGE THIS CODE. WORK ONLY INSIDE TASKS 1, 2, 3
 if (typeof module !== 'undefined' && module.exports) module.exports = { sprintChallenge5 }
