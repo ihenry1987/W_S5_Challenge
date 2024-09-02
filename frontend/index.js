@@ -62,7 +62,6 @@ async function sprintChallenge5() {
       card.classList.add('card');
       heading.classList.add('heading');
       email.classList.add('email');
-      mentorsHeading.classList.add('mentors-heading');
       mentorsHeading.classList.add('closed');
       mentorsList.classList.add('mentors-list')
     
