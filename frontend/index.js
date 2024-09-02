@@ -1,89 +1,135 @@
-// Import Axios for making API requests
-import axios from 'axios';
+async function sprintChallenge5() { // Note the async keyword so you can use `await` inside sprintChallenge5
+  // 👇 WORK ONLY BELOW THIS LINE 👇
+  // 👇 WORK ONLY BELOW THIS LINE 👇
+  // 👇 WORK ONLY BELOW THIS LINE 👇
 
-async function sprintChallenge5() {
-  // Fetch the learner data from the server
-  const learnersUrl = '/api/learners';
-  const mentorsUrl = '/api/mentors';
-  let learners, mentors;
+  // 👇 ==================== TASK 1 START ==================== 👇
+
+  // 🧠 Use Axios to GET learners and mentors.
+  // ❗ Use the variables `mentors` and `learners` to store the data.
+  // ❗ Use the await keyword when using axios.
+
+  let learners = [];
+  let mentors = [];
 
   try {
-    // Perform parallel requests for learners and mentors
-    const [learnersRes, mentorsRes] = await Promise.all([
-      axios.get(learnersUrl),
-      axios.get(mentorsUrl),
+    const [learnersResponse, mentorsResponse] = await Promise.all([
+      axios.get('http://localhost:3003/api/learners'),
+      axios.get('http://localhost:3003/api/mentors'),
     ]);
 
-    learners = learnersRes.data;
-    mentors = mentorsRes.data;
+    learners = learnersResponse.data;
+    mentors = mentorsResponse.data;
   } catch (error) {
-    console.error('Error fetching data:', error);
-    return;
+    console.error("Error fetching data:", error);
   }
 
+  // 👆 ==================== TASK 1 END ====================== 👆
+
+  // 👇 ==================== TASK 2 START ==================== 👇
+
+  // 🧠 Combine learners and mentors.
+  // ❗ Fix the `learners` array so that each learner has the required structure.
+
+  const mentorMap = new Map(mentors.map(mentor => [mentor.id, mentor.name]));
+
+  learners = learners.map(learner => ({
+    id: learner.id,
+    fullName: learner.fullName,
+    email: learner.email,
+    mentors: learner.mentorIds.map(mentorId => mentorMap.get(mentorId)),
+  }));
+
+  // 👆 ==================== TASK 2 END ====================== 👆
+
   const cardsContainer = document.querySelector('.cards');
-  const infoParagraph = document.querySelector('p.info');
-  let selectedCard = null;
+  const info = document.querySelector('.info');
+  info.textContent = 'No learner is selected';
 
-  // Function to create a card element for each learner
-  const createLearnerCard = (learner) => {
+  // 👇 ==================== TASK 3 START ==================== 👇
+
+  for (let learner of learners) { // looping over each learner object
+
     const card = document.createElement('div');
-    card.className = 'card';
+    card.className = 'card'; // Set initial class
 
-    const name = document.createElement('h3');
-    name.textContent = learner.fullName;
+    const heading = document.createElement('h3');
+    heading.textContent = learner.fullName; // Set the learner's name
+    card.appendChild(heading);
 
     const email = document.createElement('div');
+    email.className = 'email'; // Set initial class
     email.textContent = learner.email;
+    card.appendChild(email);
 
-    const mentorsTitle = document.createElement('h4');
-    mentorsTitle.textContent = 'Mentors';
-    mentorsTitle.className = 'closed';
+    const mentorsHeading = document.createElement('h4');
+    mentorsHeading.className = 'closed'; // Set initial class
+    mentorsHeading.textContent = 'Mentors';
+    card.appendChild(mentorsHeading);
 
     const mentorsList = document.createElement('ul');
-    mentorsList.hidden = true; // Hide mentors list initially
-    learner.mentors.forEach((id) => {
-      const mentor = mentors.find((m) => m.id === id);
-      const mentorItem = document.createElement('li');
-      mentorItem.textContent = `${mentor.firstName} ${mentor.lastName}`;
-      mentorsList.appendChild(mentorItem);
+    mentorsList.className = 'mentor-list'; // Set initial class
+
+    // Loop over each mentor name and create a list item
+    learner.mentors.forEach(mentorName => {
+      const li = document.createElement('li');
+      li.textContent = mentorName;
+      mentorsList.appendChild(li);
     });
 
-    card.append(name, email, mentorsTitle, mentorsList);
-    card.addEventListener('click', () => {
-      // Toggle selected state
-      if (selectedCard) selectedCard.classList.remove('selected');
-      if (selectedCard !== card) {
-        card.classList.add('selected');
-        infoParagraph.textContent = `The selected learner is ${learner.fullName}`;
-        selectedCard = card;
+    card.appendChild(mentorsList);
+
+    // 👆 ==================== TASK 3 END ====================== 👆
+
+    // 👆 WORK ONLY ABOVE THIS LINE 👆
+    // 👆 WORK ONLY ABOVE THIS LINE 👆
+    // 👆 WORK ONLY ABOVE THIS LINE 👆
+    card.appendChild(mentorsList);
+    card.dataset.fullName = learner.fullName;
+    cardsContainer.appendChild(card);
+
+    card.addEventListener('click', evt => {
+      const mentorsHeading = card.querySelector('h4');
+      // critical booleans
+      const didClickTheMentors = evt.target === mentorsHeading;
+      const isCardSelected = card.classList.contains('selected');
+      // do a reset of all learner names, selected statuses, info message
+      document.querySelectorAll('.card').forEach(crd => {
+        crd.classList.remove('selected');
+        crd.querySelector('h3').textContent = crd.dataset.fullName;
+      });
+      info.textContent = 'No learner is selected';
+      // conditional logic
+      if (!didClickTheMentors) {
+        // easy case, no mentor involvement
+        if (!isCardSelected) {
+          // selecting the card:
+          card.classList.add('selected');
+          heading.textContent += `, ID ${learner.id}`;
+          info.textContent = `The selected learner is ${learner.fullName}`;
+        }
       } else {
-        infoParagraph.textContent = 'No learner is selected';
-        selectedCard = null;
+        // clicked on mentors, we toggle and select no matter what
+        card.classList.add('selected');
+        if (mentorsHeading.classList.contains('open')) {
+          mentorsHeading.classList.replace('open', 'closed');
+        } else {
+          mentorsHeading.classList.replace('closed', 'open');
+        }
+        if (!isCardSelected) {
+          // if card was not selected adjust texts
+          heading.textContent += `, ID ${learner.id}`;
+          info.textContent = `The selected learner is ${learner.fullName}`;
+        }
       }
     });
+  }
 
-    mentorsTitle.addEventListener('click', (e) => {
-      e.stopPropagation(); // Prevent card click
-      mentorsList.hidden = !mentorsList.hidden;
-      mentorsTitle.className = mentorsList.hidden ? 'closed' : 'open';
-    });
-
-    return card;
-  };
-
-  // Render the cards
-  learners.forEach((learner) => {
-    const card = createLearnerCard(learner);
-    cardsContainer.appendChild(card);
-  });
-
-  infoParagraph.textContent = 'No learner is selected'; // Set initial info text
+  const footer = document.querySelector('footer');
+  const currentYear = new Date().getFullYear();
+  footer.textContent = `© BLOOM INSTITUTE OF TECHNOLOGY ${currentYear}`;
 }
 
-// Export the function for testing
-export { sprintChallenge5 };
-
 // ❗ DO NOT CHANGE THIS CODE. WORK ONLY INSIDE TASKS 1, 2, 3
-if (typeof module !== 'undefined' && module.exports) module.exports = { sprintChallenge5 }
+if (typeof module !== 'undefined' && module.exports) module.exports = { sprintChallenge5 };
 else sprintChallenge5();
