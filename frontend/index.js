@@ -1,48 +1,70 @@
-async function fetchData() {
-  const [learnersResponse, mentorsResponse] = await Promise.all([
-    axios.get('http://localhost:3003/api/learners'),
-    axios.get('http://localhost:3003/api/mentors')
-  ]);
-  const learners = learnersResponse.data;
-  const mentors = mentorsResponse.data;
-  // Proceed to TASK 2
+const axios = require('axios');
+const { learners, mentors } = require('./backend/data');
+
+async function sprintChallenge5() {
+  try {
+    const cardsContainer = document.querySelector('.cards');
+    const infoParagraph = document.querySelector('.info');
+    infoParagraph.textContent = 'No learner is selected';
+
+    const response = await axios.get('/learners');
+    const learnerCards = response.data.map(learner => createLearnerCard(learner));
+
+    cardsContainer.append(...learnerCards);
+
+    let selectedCard = null;
+    cardsContainer.addEventListener('click', ({ target }) => {
+      const card = target.closest('.card');
+      if (!card) return;
+
+      if (selectedCard) selectedCard.classList.remove('selected');
+      card.classList.toggle('selected', card !== selectedCard);
+      selectedCard = card.classList.contains('selected') ? card : null;
+
+      infoParagraph.textContent = selectedCard
+        ? `The selected learner is ${card.querySelector('h3').textContent}`
+        : 'No learner is selected';
+    });
+  } catch (error) {
+    console.error('Error fetching learner data:', error);
+  }
 }
 
-const combinedLearners = learners.map(learner => {
-  return {
-    id: learner.id,
-    email: learner.email,
-    fullName: learner.name,
-    mentors: learner.mentorIds.map(mentorId => {
-      const mentor = mentors.find(m => m.id === mentorId);
-      return mentor ? mentor.name : null; // Get the mentor's name
-    }).filter(name => name) // Filter out any null values
-  };
-});
-
-combinedLearners.forEach(learner => {
+function createLearnerCard(learner) {
   const card = document.createElement('div');
-  const heading = document.createElement('h2');
-  const email = document.createElement('p');
-  const mentorsHeading = document.createElement('h3');
-  const mentorsList = document.createElement('ul');
+  card.className = 'card';
 
-  heading.textContent = learner.fullName;
-  email.textContent = learner.email;
-  mentorsHeading.textContent = 'Mentors:';
+  const h3 = document.createElement('h3');
+  h3.textContent = learner.fullName;
 
-  learner.mentors.forEach(mentor => {
+  const emailDiv = document.createElement('div');
+  emailDiv.textContent = learner.email;
+
+  const h4 = document.createElement('h4');
+  h4.className = 'closed';
+  h4.textContent = 'Mentors';
+
+  const ul = document.createElement('ul');
+  ul.hidden = true;
+  learner.mentors.forEach(id => {
+    const mentor = mentors.find(m => m.id === id);
     const li = document.createElement('li');
-    li.textContent = mentor;
-    mentorsList.appendChild(li);
+    li.textContent = `${mentor.firstName} ${mentor.lastName}`;
+    ul.appendChild(li);
   });
 
-  card.appendChild(heading);
-  card.appendChild(email);
-  card.appendChild(mentorsHeading);
-  card.appendChild(mentorsList);
-  document.body.appendChild(card); // Append the card to the body or a specific container
-});
+  h4.addEventListener('click', () => {
+    const isVisible = ul.hidden;
+    ul.hidden = !isVisible;
+    h4.className = isVisible ? 'open' : 'closed';
+  });
+
+  card.append(h3, emailDiv, h4, ul);
+  return card;
+}
+
+module.exports = { sprintChallenge5 };
+
 
 // ❗ DO NOT CHANGE THIS CODE. WORK ONLY INSIDE TASKS 1, 2, 3
 if (typeof module !== 'undefined' && module.exports) module.exports = { sprintChallenge5 }
