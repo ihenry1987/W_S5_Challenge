@@ -63,6 +63,8 @@ async function sprintChallenge5() {
       heading.classList.add('heading');
       email.classList.add('email');
       mentorsHeading.classList.add('mentors-heading');
+      mentorsHeading.classList.add('closed');
+      mentorsList.classList.add('mentors-list')
     
       heading.textContent = learner.fullName;
       email.textContent = learner.email;
