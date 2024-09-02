@@ -62,16 +62,16 @@ async function sprintChallenge5() {
       card.classList.add('card');
       heading.classList.add('heading');
       email.classList.add('email');
-      mentorsHeading.classList.add('closed');
-      mentorsList.classList.add('mentors-list')
-    
+      mentorsHeading.classList.add('closed'); // Ensure 'mentors-heading' class for <h4>
+      mentorsList.classList.add('mentors-list'); // Ensure 'mentors-list' class for <ul>
+      
       heading.textContent = learner.fullName;
       email.textContent = learner.email;
-      mentorsHeading.textContent = 'Mentors';
+      mentorsHeading.textContent = 'Mentors'; // Ensure <h4> displays "Mentors"
     
       learner.mentors.forEach(mentorName => {
         const li = document.createElement('li');
-        li.textContent = mentorName;
+        li.textContent = mentorName; // Ensure correct mentor names
         mentorsList.appendChild(li);
       });
     
@@ -79,6 +79,13 @@ async function sprintChallenge5() {
       card.appendChild(email);
       card.appendChild(mentorsHeading);
       card.appendChild(mentorsList);
+    
+      cardsContainer.appendChild(card);
+    });
+    
+    // Fix: Ensure mentors lists are hidden initially
+    const mentorLists = document.querySelectorAll('.mentors-list');
+    mentorLists.forEach(list => list.style.display = 'none');
 
       // 👆 ==================== TASK 3 END ====================== 👆
 
