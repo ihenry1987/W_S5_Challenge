@@ -62,7 +62,7 @@ async function sprintChallenge5() {
       card.classList.add('card');
       heading.classList.add('heading');
       email.classList.add('email');
-      mentorsHeading.classList.add('closed'); // Ensure 'mentors-heading' class for <h4>
+      mentorsHeading.classList.add('mentors-heading'); // Ensure 'mentors-heading' class for <h4>
       mentorsList.classList.add('mentors-list'); // Ensure 'mentors-list' class for <ul>
       
       heading.textContent = learner.fullName;
@@ -85,7 +85,8 @@ async function sprintChallenge5() {
     
     // Fix: Ensure mentors lists are hidden initially
     const mentorLists = document.querySelectorAll('.mentors-list');
-    mentorLists.forEach(list => list.style.display = 'none');
+    mentorLists.forEach(list => list.style.display = 'none'); // Hide <ul> initially
+    
 
       // 👆 ==================== TASK 3 END ====================== 👆
 
