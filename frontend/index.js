@@ -52,34 +52,57 @@ async function sprintChallenge5() {
 
     // 👇 ==================== TASK 3 START ==================== 👇
 
-    learners.forEach(learner => {
+    for (let learner of learners) {
+      // Create the card and its elements
       const card = document.createElement('div');
       const heading = document.createElement('h3');
       const email = document.createElement('div');
       const mentorsHeading = document.createElement('h4');
       const mentorsList = document.createElement('ul');
     
+      // Set initial class names and text content
       card.classList.add('card');
-      heading.classList.add('heading');
+      heading.classList.add('name');
       email.classList.add('email');
       mentorsHeading.classList.add('closed');
-      mentorsList.classList.add('mentors-list')
+      mentorsList.classList.add('mentors-list');
+      
+      mentorsHeading.textContent = 'Mentors'; // This will display "Mentors"
     
+      // Fill elements with learner data
       heading.textContent = learner.fullName;
       email.textContent = learner.email;
-      mentorsHeading.textContent = 'Mentors';
     
-      learner.mentors.forEach(mentorName => {
-        const li = document.createElement('li');
-        li.textContent = mentorName;
-        mentorsList.appendChild(li);
-      });
+      // Add mentors to the list
+      for (const mentorId of learner.mentorIds) {
+        const mentor = mentors.find(m => m.id === mentorId);
+        if (mentor) {
+          const mentorItem = document.createElement('li');
+          mentorItem.textContent = mentor.name; // Use the mentor's name
+          mentorsList.appendChild(mentorItem);
+        } else {
+          console.error(`Mentor with ID ${mentorId} not found`);
+        }
+      }
     
+      // Assemble the card
       card.appendChild(heading);
       card.appendChild(email);
       card.appendChild(mentorsHeading);
       card.appendChild(mentorsList);
-
+    
+      // Add card to the container
+      cardsContainer.appendChild(card);
+    
+      // Add click event listener to handle card selection and mentor list toggle
+      card.addEventListener('click', evt => {
+        // existing click event handling code
+      });
+    }
+    
+    // Ensure mentors are hidden on page load
+    const mentorLists = document.querySelectorAll('.mentors-list');
+    mentorLists.forEach(list => list.classList.add('hidden'))
       // 👆 ==================== TASK 3 END ====================== 👆
 
       // 👆 WORK ONLY ABOVE THIS LINE 👆
