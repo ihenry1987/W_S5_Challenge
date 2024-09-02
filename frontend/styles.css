@@ -102,3 +102,7 @@ section {
 footer {
   padding: 1rem;
 }
+
+.mentors-list.closed {
+  display: none;
+}
