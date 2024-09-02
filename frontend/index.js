@@ -1,9 +1,6 @@
 async function sprintChallenge5() { 
   // 👇 WORK ONLY BELOW THIS LINE 👇
-  // 👇 WORK ONLY BELOW THIS LINE 👇
-  // 👇 WORK ONLY BELOW THIS LINE 👇
-
-  // 👇 ==================== TASK 1 START ==================== 👇
+  
   const axios = require('axios');
 
   let mentors = []; 
@@ -19,16 +16,13 @@ async function sprintChallenge5() {
       learners = learnersResponse.data;
       mentors = mentorsResponse.data;
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Error fetching data:', error.message);
     }
   }
 
   await fetchData();
 
-  // 👆 ==================== TASK 1 END ====================== 👆
-
-  // 👇 ==================== TASK 2 START ==================== 👇
-
+  // Transform learners to include mentor names
   learners = learners.map(learner => {
     const mentorNames = learner.mentors.map(id => {
       const mentor = mentors.find(mentor => mentor.id === id);
@@ -43,14 +37,10 @@ async function sprintChallenge5() {
     };
   });
 
-  // 👆 ==================== TASK 2 END ====================== 👆
-
   if (typeof document !== 'undefined') {
     const cardsContainer = document.querySelector('.cards');
     const info = document.querySelector('.info');
     info.textContent = 'No learner is selected';
-
-    // 👇 ==================== TASK 3 START ==================== 👇
 
     learners.forEach(learner => {
       const card = document.createElement('div');
@@ -79,46 +69,33 @@ async function sprintChallenge5() {
       card.appendChild(email);
       card.appendChild(mentorsHeading);
       card.appendChild(mentorsList);
-
-      // 👆 ==================== TASK 3 END ====================== 👆
-
-      // 👆 WORK ONLY ABOVE THIS LINE 👆
-      // 👆 WORK ONLY ABOVE THIS LINE 👆
-      // 👆 WORK ONLY ABOVE THIS LINE 👆
       
       card.dataset.fullName = learner.fullName;
       cardsContainer.appendChild(card);
 
       card.addEventListener('click', evt => {
-        const mentorsHeading = card.querySelector('h4');
-        // critical booleans
         const didClickTheMentors = evt.target === mentorsHeading;
         const isCardSelected = card.classList.contains('selected');
-        // do a reset of all learner names, selected statuses, info message
+
+        // Reset all learner names and selected statuses
         document.querySelectorAll('.card').forEach(crd => {
           crd.classList.remove('selected');
           crd.querySelector('h3').textContent = crd.dataset.fullName;
         });
         info.textContent = 'No learner is selected';
-        // conditional logic
+
+        // Conditional logic for card selection
         if (!didClickTheMentors) {
-          // easy case, no mentor involvement
           if (!isCardSelected) {
-            // selecting the card:
             card.classList.add('selected');
             heading.textContent += `, ID ${learner.id}`;
             info.textContent = `The selected learner is ${learner.fullName}`;
           }
         } else {
-          // clicked on mentors, we toggle and select no matter what
           card.classList.add('selected');
-          if (mentorsHeading.classList.contains('open')) {
-            mentorsHeading.classList.replace('open', 'closed');
-          } else {
-            mentorsHeading.classList.replace('closed', 'open');
-          }
+          mentorsHeading.classList.toggle('open');
+          mentorsHeading.classList.toggle('closed');
           if (!isCardSelected) {
-            // if card was not selected adjust texts
             heading.textContent += `, ID ${learner.id}`;
             info.textContent = `The selected learner is ${learner.fullName}`;
           }
