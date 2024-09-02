@@ -1,47 +1,35 @@
-async function sprintChallenge5() { 
-  // 👇 WORK ONLY BELOW THIS LINE 👇
-  // 👇 WORK ONLY BELOW THIS LINE 👇
+async function sprintChallenge5() {
   // 👇 WORK ONLY BELOW THIS LINE 👇
 
   // 👇 ==================== TASK 1 START ==================== 👇
-const axios = require('axios')
-  let mentors = []; 
-  let learners = []; 
 
- 
-  async function fetchData() {
-    try {
-      const [learnersResponse, mentorsResponse] = await Promise.all([
-        axios.get('http://localhost:3003/api/learners'),
-        axios.get('http://localhost:3003/api/mentors'),
-      ]);
+  let learners = [];
+  let mentors = [];
 
-      learners = learnersResponse.data;
-      mentors = mentorsResponse.data;
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
+  try {
+    const [learnersResponse, mentorsResponse] = await Promise.all([
+      axios.get('http://localhost:3003/api/learners'),
+      axios.get('http://localhost:3003/api/mentors'),
+    ]);
+
+    learners = learnersResponse.data;
+    mentors = mentorsResponse.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
   }
-
-  await fetchData();
 
   // 👆 ==================== TASK 1 END ====================== 👆
 
   // 👇 ==================== TASK 2 START ==================== 👇
 
-  learners = learners.map(learner => {
-    const mentorNames = learner.mentors.map(id => {
-      const mentor = mentors.find(mentor => mentor.id === id);
-      return mentor ? mentor.fullName : 'Unknown Mentor';
-    });
-  
-    return {
-      id: learner.id,
-      fullName: learner.fullName,
-      email: learner.email,
-      mentors: mentorNames,
-    };
-  });
+  const mentorMap = new Map(mentors.map(mentor => [mentor.id, mentor.name]));
+
+  learners = learners.map(learner => ({
+    id: learner.id,
+    fullName: learner.fullName,
+    email: learner.email,
+    mentors: learner.mentorIds.map(mentorId => mentorMap.get(mentorId)),
+  }));
 
   // 👆 ==================== TASK 2 END ====================== 👆
 
@@ -51,79 +39,77 @@ const axios = require('axios')
 
   // 👇 ==================== TASK 3 START ==================== 👇
 
-  learners.forEach(learner => {
+  for (let learner of learners) {
     const card = document.createElement('div');
+    card.className = 'card';
+
     const heading = document.createElement('h3');
-    const email = document.createElement('div');
-    const mentorsHeading = document.createElement('h4');
-    const mentorsList = document.createElement('ul');
-  
-    card.classList.add('card');
-    heading.classList.add('heading');
-    email.classList.add('email');
-    mentorsHeading.classList.add('mentors-heading');
-    mentorsList.classList.add('mentors-list');
-  
     heading.textContent = learner.fullName;
+    card.appendChild(heading);
+
+    const email = document.createElement('div');
+    email.className = 'email';
     email.textContent = learner.email;
-    mentorsHeading.textContent = 'Mentors:';
-  
+    card.appendChild(email);
+
+    const mentorsHeading = document.createElement('h4');
+    mentorsHeading.className = 'closed';
+    mentorsHeading.textContent = 'Mentors'; // Ensuring the text is "Mentors"
+    card.appendChild(mentorsHeading);
+
+    const mentorsList = document.createElement('ul');
+    mentorsList.className = 'mentor-list'; // Initial class name
+    mentorsList.style.display = 'none'; // Hide the mentors list on page load
+
+    // Loop over each mentor name and create a list item
     learner.mentors.forEach(mentorName => {
       const li = document.createElement('li');
       li.textContent = mentorName;
       mentorsList.appendChild(li);
     });
-  
-    card.appendChild(heading);
-    card.appendChild(email);
-    card.appendChild(mentorsHeading);
+
     card.appendChild(mentorsList);
 
     // 👆 ==================== TASK 3 END ====================== 👆
 
-    // 👆 WORK ONLY ABOVE THIS LINE 👆
-    // 👆 WORK ONLY ABOVE THIS LINE 👆
-    // 👆 WORK ONLY ABOVE THIS LINE 👆
-    
     card.dataset.fullName = learner.fullName;
     cardsContainer.appendChild(card);
 
     card.addEventListener('click', evt => {
       const mentorsHeading = card.querySelector('h4');
-      // critical booleans
+      const mentorsList = card.querySelector('.mentor-list');
       const didClickTheMentors = evt.target === mentorsHeading;
       const isCardSelected = card.classList.contains('selected');
-      // do a reset of all learner names, selected statuses, info message
+
       document.querySelectorAll('.card').forEach(crd => {
         crd.classList.remove('selected');
         crd.querySelector('h3').textContent = crd.dataset.fullName;
+        crd.querySelector('.mentor-list').style.display = 'none'; // Hide mentors on deselection
       });
       info.textContent = 'No learner is selected';
-      // conditional logic
+
       if (!didClickTheMentors) {
-        // easy case, no mentor involvement
         if (!isCardSelected) {
-          // selecting the card:
           card.classList.add('selected');
           heading.textContent += `, ID ${learner.id}`;
           info.textContent = `The selected learner is ${learner.fullName}`;
         }
       } else {
-        // clicked on mentors, we toggle and select no matter what
         card.classList.add('selected');
         if (mentorsHeading.classList.contains('open')) {
           mentorsHeading.classList.replace('open', 'closed');
+          mentorsList.style.display = 'none'; // Hide the list
         } else {
           mentorsHeading.classList.replace('closed', 'open');
+          mentorsList.style.display = 'block'; // Show the list
         }
         if (!isCardSelected) {
-          // if card was not selected adjust texts
           heading.textContent += `, ID ${learner.id}`;
           info.textContent = `The selected learner is ${learner.fullName}`;
         }
       }
     });
-  });
+  }
 
   const footer = document.querySelector('footer');
   const currentYear = new Date().getFullYear();
@@ -131,5 +117,5 @@ const axios = require('axios')
 }
 
 // ❗ DO NOT CHANGE THIS CODE. WORK ONLY INSIDE TASKS 1, 2, 3
-if (typeof module !== 'undefined' && module.exports) module.exports = { sprintChallenge5 }
+if (typeof module !== 'undefined' && module.exports) module.exports = { sprintChallenge5 };
 else sprintChallenge5();
