@@ -135,13 +135,13 @@ async function sprintChallenge5() {
           }
         }
       });
-    });
+    };
 
     const footer = document.querySelector('footer');
     const currentYear = new Date().getFullYear();
     footer.textContent = `© BLOOM INSTITUTE OF TECHNOLOGY ${currentYear}`;
   }
-}
+
 
 // ❗ DO NOT CHANGE THIS CODE. WORK ONLY INSIDE TASKS 1, 2, 3
 if (typeof module !== 'undefined' && module.exports) module.exports = { sprintChallenge5 }
